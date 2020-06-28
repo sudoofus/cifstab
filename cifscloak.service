@@ -1,0 +1,16 @@
+[Unit]
+After=multi-user.target
+Description=cifscloak cifs share mount operation
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+
+# Command to execute when the service is started
+ExecStart=/usr/bin/python3 /usr/bin/cifscloak.py mount -n mount_a mount_b
+
+# Command to execute when the service is stopped
+ExecStop=/usr/bin/python3 /usr/bin/cifscloak.py mount -n mount_a mount_b
+
+[Install]
+WantedBy=multi-user.target
