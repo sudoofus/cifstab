@@ -7,12 +7,12 @@ Tested on Ubuntu 20.04.
 ### Quick start:
 
 1/ Create an encrypted cifstab and add a cifs mount.  
-./cifscloak.py addmount --alias <alias_to_mount> --sharename <share_name> --mountpoint <mount_point> --i <cifs_server_address> --options <cifs_mount_options>
+./cifscloak.py addmount --alias <alias_to_mount> --sharename <share_name> --mountpoint <mount_point> --i <cifs_server_address> --options <cifs_mount_options> --user cifsusername
 
-`sudo ./cifscloak.py addmount -a films -s myfilms -m /mnt/films -i frankthefileserver -o "ro"`  
+`sudo ./cifscloak.py addmount -a films -s myfilms -m /mnt/films -i frankthefileserver -o "ro" -u cifsuser`  
 `Password:`  
 
-`sudo ./cifscloak.py addmount -a games -s mygames -m /mnt/games -i frankthefileserver`  
+`sudo ./cifscloak.py addmount -a games -s mygames -m /mnt/games -i frankthefileserver -u cifsuser`  
 `Password:`
 
 2/ Mount one or more cifs shares.  
@@ -29,7 +29,7 @@ Tested on Ubuntu 20.04.
 
 `sudo ./cifscloak.py listmounts`
 
-5/ Remove one or more cifs shares.  
+5/ Remove one or more cifs shares from the cifstab.  
 ./cifscloak.py removemounts --aliases <alias_to_mount1> <alias_to_mount2>
 
 `sudo ./cifscloak.py removemounts -a films games`
@@ -37,8 +37,8 @@ Tested on Ubuntu 20.04.
 ### Synopsis
 This utility should be run through sudo or directly as root.
 
-The following files are created the first time that addmount is executed:  
-> 0755 /root/.cifstab  
+The following directory and files are created the first time that addmount is executed:  
+> 0755 /root/.cifstab/  
 > 0400 /root/.cifstab/.keyfile  
 > 0644 /root/.cifstab/.cifstab.db  
 
@@ -50,7 +50,7 @@ For example:
 > 500 /usr/bin/cifscloak.py
 
 ### Mount cifs shares at boot time through systemd
-I tested this systemd file under Ubuntu 20.04 and it seems to work ok, tbh I'm old school and find systemd a little bit tricky at times so this might not be the best solution?
+I tested this systemd file under Ubuntu 20.04 and it seems to work ok, tbh I'm old school and find systemd a little bit tricky at times so this might not be the most ideal systemd solution?
 
 > /etc/systemd/system/cifscloak.service
 
