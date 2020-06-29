@@ -53,7 +53,7 @@ class Cifscloak():
         for alias in args.aliases:
             cifsmount = self.getcredentials(alias)
             if not cifsmount:
-                syslog("cifs alias {} not found in cifstab")
+                syslog("cifs alias {} not found in cifstab".format(alias))
                 sys.exit(1)
             if args.u:
                 syslog("Attempting umount {}".format(alias))
