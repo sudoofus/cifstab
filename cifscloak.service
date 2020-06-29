@@ -7,10 +7,10 @@ Type=oneshot
 RemainAfterExit=yes
 
 # Command to execute when the service is started
-ExecStart=/usr/bin/python3 /usr/bin/cifscloak.py mount -n mount_a mount_b
+ExecStart=/usr/bin/env python3 /usr/bin/cifscloak.py mount -a films games
 
 # Command to execute when the service is stopped
-ExecStop=/usr/bin/python3 /usr/bin/cifscloak.py mount -n mount_a mount_b
+ExecStop=/usr/bin/env python3 /usr/bin/cifscloak.py mount -u -a films games
 
 [Install]
 WantedBy=multi-user.target
