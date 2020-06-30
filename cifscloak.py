@@ -3,6 +3,7 @@
 import os
 import sys
 import stat
+import time
 import sqlite3
 import argparse
 import subprocess
@@ -75,14 +76,24 @@ class Cifscloak():
         for r in self.cursor:
             return { 'alias':r[0], 'address':self.decrypt(r[1]), 'sharename':self.decrypt(r[2]), 'mountpoint':self.decrypt(r[3]), 'options':self.decrypt(r[4]), 'user':self.decrypt(r[5]), 'password':self.decrypt(r[6]) }
 
-    def execute(self,cmd,expectedreturn=0):
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
-        stdout, stderr = proc.communicate()
-        if proc.returncode and proc.returncode != expectedreturn:
-            syslog('Error: {}'.format(stderr))
-            syslog('Returned: {}'.format(proc.returncode))
-            print(stderr)
-            sys.exit(proc.returncode)
+    def execute(self,cmd,retryonreturns=[32],attempts=10,waittime=5,expectedreturn=0):
+	
+        attempt = 0
+        returncode = None
+        while returncode != expectedreturn and attempt <= attempts:
+            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
+            stdout, stderr = proc.communicate()
+            if proc.returncode and proc.returncode != expectedreturn:
+                syslog('Error: {}'.format(stderr))
+                syslog('Returned: {}'.format(proc.returncode))
+                print(stderr)
+            attempt += 1
+            returncode = proc.returncode
+
+            if returncode != expectedreturn:
+                time.sleep(5)
+        if returncode: syslog('Exceeded attempts {}, giving up'.format(attempts))
+        sys.exit(proc.returncode)
             
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='cifscloak - command line utility for mounting cifs shares using encrypted passwords')
