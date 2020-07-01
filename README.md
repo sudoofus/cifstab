@@ -19,16 +19,16 @@ cifscloak.py addmount --name <give_name_to_mount> --sharename <share_name> --mou
 `Password:`
 
 2/ Mount one or more cifs shares.  
-cifscloak.py mount --names <name1> <name2>
-Or mount all shares.
+cifscloak.py mount --names <name1> <name2>  
+Or mount all shares.  
 cifscloak.py mount -a
 
 `sudo cifscloak.py mount -n films games`
 
 
 3/ Unmount one or more cifs shares.  
-cifscloak.py mount -u --names <name1> <name2>
-Or unmount all cifs shares
+cifscloak.py mount -u --names <name1> <name2>  
+Or unmount all cifs shares  
 cifscloak.py mount -a
 
 `sudo cifscloak.py -u -n films games`
@@ -42,8 +42,7 @@ cifscloak.py removemounts --names <name1> <name2>
 
 `sudo cifscloak.py removemounts -n films games`
 
-### Install - Temporary during testing
-
+### Install - Temporary during testing  
 python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps  cifscloak 
 
 Results in:  
