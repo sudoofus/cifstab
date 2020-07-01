@@ -23,7 +23,7 @@ cifscloak.py mount --names <name1> <name2>
 Or mount all shares.
 cifscloak.py mount -a
 
-`sudo ./cifscloak.py mount -n films games`
+`sudo cifscloak.py mount -n films games`
 
 
 3/ Unmount one or more cifs shares.  
@@ -40,7 +40,7 @@ cifscloak.py mount -a
 5/ Remove one or more cifs shares from the cifstab.  
 cifscloak.py removemounts --names <name1> <name2>
 
-`sudo ./cifscloak.py removemounts -n films games`
+`sudo cifscloak.py removemounts -n films games`
 
 ### Install - Temporary during testing
 
@@ -49,8 +49,8 @@ python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps  cifs
 Results in:  
 /usr/local/bin/cifscloak  
 *Usually  
-I don't seem to be able to set the permissions through the setup.py, help on that would be appreciated!  
-Permissions should be set otherwise the script could be altered to write the passwords somewhere next time root runs the script!  
+I don't seem to be able to set the permissions to 600 through setup.py, help on that would be appreciated!  
+Tight permissions should be set otherwise the script could be altered to dump passwords somewhere next time root executes the script.  
 
 ### Uninstall
 python3 -m pip uninstall cifscloak
