@@ -6,7 +6,7 @@ Tested on Ubuntu 20.04, python3.8.
 Lesser pythons cause argparse a problem, not had a chance to look into this yet.
 
 ### Quick start:
-Install none default python modules
+Install none default python modules  
 pip3 install cryptography
 
 1/ Create an encrypted cifstab and add a cifs mount.  
