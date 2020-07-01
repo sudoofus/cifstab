@@ -15,6 +15,19 @@ from cryptography.fernet import Fernet
 
 class Cifscloak():
 
+    cifstabschema = '''
+        CREATE TABLE IF NOT EXISTS cifstab(
+        alias,
+        address,
+        sharename,
+        mountpoint,
+        options,
+        user,
+        password,
+        PRIMARY KEY (alias)
+        )
+        '''
+
     retryschema = {
         'mount': {'16':'Device or resource busy'},
         'umount': ['target is busy.']
@@ -23,17 +36,25 @@ class Cifscloak():
     def __init__(self,cifstabdir='/root/.cifstab',keyfile='.keyfile',cifstab='.cifstab.db',retries=3,waitsecs=5):
         self.status = { 'error':0, 'successcount':0, 'failedcount':0, 'success':[], 'failed': [], 'attempts': {}, 'messages':[] }
         self.mountprocs = {}
-        self.exit = 0
         self.retries = retries
         self.waitsecs = waitsecs
         self.cifstabdir = cifstabdir
         self.cifstab = self.cifstabdir+os.sep+cifstab
         self.keyfile = self.cifstabdir+os.sep+keyfile
-        if not os.path.exists(self.cifstabdir): os.makedirs(self.cifstabdir)
+        self.exit = 0
+
+        try:
+            if not os.path.exists(self.cifstabdir): os.makedirs(self.cifstabdir)
+        except PermissionError:
+            print('PermissionError - must be root user to read cifstab')
+            sys.exit(1)
+
         os.chmod(self.cifstabdir,stat.S_IRWXU)
         self.db = sqlite3.connect(self.cifstab)
         self.cursor = self.db.cursor()
-        self.cursor.execute('''CREATE TABLE IF NOT EXISTS cifstab(alias,address,sharename,mountpoint,options,user,password,PRIMARY KEY (alias))''')
+        self.cursor.execute("PRAGMA auto_vacuum = FULL")
+        self.cursor.execute(self.cifstabschema)
+
         if not os.path.exists(self.keyfile):
             with open(self.keyfile,'wb') as f:
                 f.write(Fernet.generate_key())
@@ -55,20 +76,29 @@ class Cifscloak():
             self.db.commit()
         except sqlite3.IntegrityError:
             print("Cifs mount alias must be unique\nExisting aliases:")
-            self.listmounts(None)
+            self.listmounts()
 
     def removemounts(self,args):
         for alias in args.aliases:
             self.cursor.execute('''DELETE FROM cifstab WHERE alias = ?''',(alias,))
             self.db.commit()
     
-    def listmounts(self,args):
+    def listmounts(self):
+        mounts = []
         self.cursor.execute('''SELECT alias FROM cifstab''')
         for r in self.cursor:
+            mounts.append(r[0])
             print(r[0])
+        return mounts
 
     def mount(self,args):
-        for alias in list(dict.fromkeys(args.aliases)):
+
+        if args.all:
+            mounts = self.listmounts()
+        else:
+            mounts = list(dict.fromkeys(args.aliases))
+
+        for alias in mounts:
             cifsmount = self.getcredentials(alias)
             if not len(cifsmount):
                 message = "cifs alias {} not found in cifstab".format(alias)
@@ -106,7 +136,6 @@ class Cifscloak():
         returncode = None
         self.status['attempts'][alias] = 0
         while returncode != expectedreturn and self.status['attempts'][alias] < self.retries:
-            
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
             stdout, stderr = proc.communicate()
             returncode = proc.returncode
@@ -150,22 +179,18 @@ if __name__ == "__main__":
     parser_addmount.add_argument("-o", "--options", help="Quoted csv options e.g. \"domain=mydomain,ro\"", default=' ', required=False)
     parser_addmount.add_argument("-i", "--ipaddress", help="Server address or ipaddress", required=True)
     parser_addmount.add_argument("-a", "--alias", help="Connection name e.g identifying server name", required=True)
-    
-    parser_removemounts = subparsers.add_parser('removemounts', help="Remove cifs mounts from encrypted cifstab. removemount -h for help")
-    parser_removemounts.add_argument("-a", "--aliases", nargs="+", help="Remove cifs mounts e.g. -n mnt1 mnt2", required=True)
-
-    parser_listmounts = subparsers.add_parser('listmounts', help="List cifs mounts in encrypted cifstab")
-
-    parser_mount = subparsers.add_parser('mount', help="mount -h for help")
-    parser_mount.add_argument("-a", "--aliases", nargs="+", help="Mount reference names, e.g -n mnt1 mnt2", required=True)
-    parser_mount.add_argument("-u", action='store_true', help="Unmount the named cifs shares, e.g -n mnt1 mnt2", required=False )
+    parser_mount = subparsers.add_parser('mount', help="Mount cifs shares, mount -h for help")
+    parser_mount.add_argument("-u", action='store_true', help="Unmount the named cifs shares, e.g -a films music", required=False )
     parser_mount.add_argument("-r", "--retries", help="Retry count, useful when systemd is in play", required=False, default=3, type=int )
     parser_mount.add_argument("-w", "--waitsecs", help="Wait time in seconds between retries", required=False, default=5, type=int )
-
+    group = parser_mount.add_mutually_exclusive_group(required=True)
+    group.add_argument("-n", "--names", nargs="+", help="Mount reference names, e.g -a films music. --names and --all are mutually exclusive", required=False)
+    group.add_argument("-a", "--all", action='store_true', help="Mount everything in the cifstab.", required=False)
+    parser_removemounts = subparsers.add_parser('removemounts', help="Remove cifs mounts from encrypted cifstab. removemount -h for help")
+    parser_removemounts.add_argument("-a", "--aliases", nargs="+", help="Remove cifs mounts e.g. -a films music", required=True)
+    parser_listmounts = subparsers.add_parser('listmounts', help="List cifs mounts in encrypted cifstab")
     args = parser.parse_args()
-    retries = getattr(args, 'retries', defaultRetries)
-    waitsecs = getattr(args, 'waitsecs', defaultWaitSecs)
-    cifscloak = Cifscloak(retries=retries,waitsecs=waitsecs)
+    cifscloak = Cifscloak(retries=getattr(args,'retries',defaultRetries),waitsecs=getattr(args,'waitsecs',defaultWaitSecs))
     getattr(cifscloak, args.subcommand)(args)
     cifscloak.checkstatus()
 
