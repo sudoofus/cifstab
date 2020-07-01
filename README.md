@@ -10,32 +10,50 @@ Install none default python modules
 pip3 install cryptography
 
 1/ Create an encrypted cifstab and add a cifs mount.  
-./cifscloak.py addmount --alias <alias_to_mount> --sharename <share_name> --mountpoint <mount_point> --i <cifs_server_address> --options <cifs_mount_options> --user cifsusername
+cifscloak.py addmount --name <give_name_to_mount> --sharename <share_name> --mountpoint <mount_point> --i <cifs_server_address> --options <cifs_mount_options> --user cifsusername
 
-`sudo ./cifscloak.py addmount -a films -s myfilms -m /mnt/films -i frankthefileserver -o "ro" -u cifsuser`  
+`sudo cifscloak.py addmount -n films -s myfilms -m /mnt/films -i myfileserver -o "ro" -u cifsuser`  
 `Password:`  
 
-`sudo ./cifscloak.py addmount -a games -s mygames -m /mnt/games -i frankthefileserver -u cifsuser`  
+`sudo cifscloak.py addmount -n games -s mygames -m /mnt/games -i myfileserver -u cifsuser`  
 `Password:`
 
 2/ Mount one or more cifs shares.  
-./cifscloak.py mount --aliases <alias_to_mount1> <alias_to_mount2>
+cifscloak.py mount --names <name1> <name2>
+Or mount all shares.
+cifscloak.py mount -a
 
-`sudo ./cifscloak.py mount -a films games`
+`sudo ./cifscloak.py mount -n films games`
+
 
 3/ Unmount one or more cifs shares.  
-./cifscloak.py mount -u --aliases <alias_to_mount1> <alias_to_mount2>
+cifscloak.py mount -u --names <name1> <name2>
+Or unmount all cifs shares
+cifscloak.py mount -a
 
-`sudo ./cifscloak.py -u -a films games`
+`sudo cifscloak.py -u -n films games`
 
 4/ List cifs share aliases stored in the cifstab.  
 
-`sudo ./cifscloak.py listmounts`
+`sudo cifscloak.py listmounts`
 
 5/ Remove one or more cifs shares from the cifstab.  
-./cifscloak.py removemounts --aliases <alias_to_mount1> <alias_to_mount2>
+cifscloak.py removemounts --names <name1> <name2>
 
-`sudo ./cifscloak.py removemounts -a films games`
+`sudo ./cifscloak.py removemounts -n films games`
+
+### Install - Temporary during testing
+
+python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps  cifscloak 
+
+Results in:  
+/usr/local/bin/cifscloak  
+*Usually  
+I don't seem to be able to set the permissions through the setup.py, help on that would be appreciated!  
+Permissions should be set otherwise the script could be altered to write the passwords somewhere next time root runs the script!  
+
+### Uninstall
+python3 -m pip uninstall cifscloak
 
 ### Synopsis
 This utility should be run through sudo or directly as root.
@@ -79,6 +97,7 @@ I tested this systemd file under Ubuntu 20.04 and it seems to work ok, tbh I'm o
 > systemctl stop cifscloak  
 
 * Mountpoint directories are automatically created with default permissions.
+
 
 ## Help
 ### ./cifscloak.py -h

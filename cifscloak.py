@@ -17,14 +17,14 @@ class Cifscloak():
 
     cifstabschema = '''
         CREATE TABLE IF NOT EXISTS cifstab(
-        alias,
+        name,
         address,
         sharename,
         mountpoint,
         options,
         user,
         password,
-        PRIMARY KEY (alias)
+        PRIMARY KEY (name)
         )
         '''
 
@@ -70,22 +70,22 @@ class Cifscloak():
         password = getpass()
         try:
             self.cursor.execute('''
-            INSERT INTO cifstab (alias,address,sharename,mountpoint,options,user,password)
+            INSERT INTO cifstab (name,address,sharename,mountpoint,options,user,password)
             VALUES (?,?,?,?,?,?,?)''',
-            (args.alias,self.encrypt(args.ipaddress),self.encrypt(args.sharename),self.encrypt(args.mountpoint),self.encrypt(args.options),self.encrypt(args.user),self.encrypt(password)))
+            (args.name,self.encrypt(args.ipaddress),self.encrypt(args.sharename),self.encrypt(args.mountpoint),self.encrypt(args.options),self.encrypt(args.user),self.encrypt(password)))
             self.db.commit()
         except sqlite3.IntegrityError:
-            print("Cifs mount alias must be unique\nExisting aliases:")
-            self.listmounts()
+            print("Cifs mount name must be unique\nExisting names:")
+            self.listmounts(None)
 
     def removemounts(self,args):
-        for alias in args.aliases:
-            self.cursor.execute('''DELETE FROM cifstab WHERE alias = ?''',(alias,))
+        for name in args.names:
+            self.cursor.execute('''DELETE FROM cifstab WHERE name = ?''',(name,))
             self.db.commit()
     
-    def listmounts(self):
+    def listmounts(self,args):
         mounts = []
-        self.cursor.execute('''SELECT alias FROM cifstab''')
+        self.cursor.execute('''SELECT name FROM cifstab''')
         for r in self.cursor:
             mounts.append(r[0])
             print(r[0])
@@ -94,30 +94,30 @@ class Cifscloak():
     def mount(self,args):
 
         if args.all:
-            mounts = self.listmounts()
+            mounts = self.listmounts(None)
         else:
-            mounts = list(dict.fromkeys(args.aliases))
+            mounts = list(dict.fromkeys(args.names))
 
-        for alias in mounts:
-            cifsmount = self.getcredentials(alias)
+        for name in mounts:
+            cifsmount = self.getcredentials(name)
             if not len(cifsmount):
-                message = "cifs alias {} not found in cifstab".format(alias)
+                message = "cifs name {} not found in cifstab".format(name)
                 syslog(message)
                 print(message)
                 self.status['messages'].append(message)
                 self.status['error'] = 1
                 continue
             if args.u:
-                syslog("Attempting umount {}".format(alias))
+                syslog("Attempting umount {}".format(name))
                 cifscmd = "umount {}".format(cifsmount['mountpoint'])
                 retryon = list(self.retryschema['umount'])
             else:
-                syslog("Attempting mount {}".format(alias))
+                syslog("Attempting mount {}".format(name))
                 if not os.path.exists(cifsmount['mountpoint']):
                     os.makedirs(cifsmount['mountpoint'])
                 cifscmd = "mount -t cifs -o username={},password={},{} //{}/{} {}".format(cifsmount['user'],cifsmount['password'],cifsmount['options'],cifsmount['address'],cifsmount['sharename'],cifsmount['mountpoint'])
                 retryon = list(self.retryschema['mount'])
-            self.execute(cifscmd,alias,retryon)
+            self.execute(cifscmd,name,retryon)
 
     def encrypt(self,plain):
         return self.key.encrypt(bytes(plain,encoding='utf-8'))
@@ -125,17 +125,17 @@ class Cifscloak():
     def decrypt(self,encrypted):
         return self.key.decrypt(encrypted).decode('utf-8')
 
-    def getcredentials(self,alias):
+    def getcredentials(self,name):
         credentials = {}
-        self.cursor.execute('''SELECT alias,address,sharename,mountpoint,options,user,password from cifstab WHERE alias = ?''',(alias,))
+        self.cursor.execute('''SELECT name,address,sharename,mountpoint,options,user,password from cifstab WHERE name = ?''',(name,))
         for r in self.cursor:
-            credentials = { 'alias':r[0], 'address':self.decrypt(r[1]), 'sharename':self.decrypt(r[2]), 'mountpoint':self.decrypt(r[3]), 'options':self.decrypt(r[4]), 'user':self.decrypt(r[5]), 'password':self.decrypt(r[6]) }
+            credentials = { 'name':r[0], 'address':self.decrypt(r[1]), 'sharename':self.decrypt(r[2]), 'mountpoint':self.decrypt(r[3]), 'options':self.decrypt(r[4]), 'user':self.decrypt(r[5]), 'password':self.decrypt(r[6]) }
         return credentials
 
-    def execute(self,cmd,alias,retryon=[],expectedreturn=0):
+    def execute(self,cmd,name,retryon=[],expectedreturn=0):
         returncode = None
-        self.status['attempts'][alias] = 0
-        while returncode != expectedreturn and self.status['attempts'][alias] < self.retries:
+        self.status['attempts'][name] = 0
+        while returncode != expectedreturn and self.status['attempts'][name] < self.retries:
             proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
             stdout, stderr = proc.communicate()
             returncode = proc.returncode
@@ -145,7 +145,7 @@ class Cifscloak():
                 syslog('Returned: {}'.format(proc.returncode))
                 syslog('MountErr: {}'.format(mounterr))
                 self.status['error'] = 1
-                self.status['messages'].append('{}: {}'.format(alias,stderr))
+                self.status['messages'].append('{}: {}'.format(name,stderr))
                 sys.stderr.write(stderr)
                 if str(mounterr) in retryon:
                     time.sleep(self.waitsecs)
@@ -154,15 +154,15 @@ class Cifscloak():
                     syslog(message)
                     break
 
-            self.status['attempts'][alias] += 1
+            self.status['attempts'][name] += 1
                 
         if returncode != expectedreturn:
             self.status['error'] = 1
-            self.status['failed'].append(alias)
+            self.status['failed'].append(name)
             self.status['failedcount'] += 1
         else:
             self.status['successcount'] += 1
-            self.status['success'].append(alias)
+            self.status['success'].append(name)
 
 
 if __name__ == "__main__":
@@ -173,21 +173,21 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='cifscloak - command line utility for mounting cifs shares using encrypted passwords')
     subparsers = parser.add_subparsers(help='Subcommands', dest='subcommand', required=True)   
     parser_addmount = subparsers.add_parser('addmount', help="Add a cifs mount to encrypted cifstab. addmount -h for help")
-    parser_addmount.add_argument("-u", "--user", help="User name", required=True)
+    parser_addmount.add_argument("-n", "--name", help="Connection name e.g identifying server name", required=True)
     parser_addmount.add_argument("-s", "--sharename", help="Share name", required=True)
-    parser_addmount.add_argument("-m", "--mountpoint", help="Mount point", required=True)
-    parser_addmount.add_argument("-o", "--options", help="Quoted csv options e.g. \"domain=mydomain,ro\"", default=' ', required=False)
     parser_addmount.add_argument("-i", "--ipaddress", help="Server address or ipaddress", required=True)
-    parser_addmount.add_argument("-a", "--alias", help="Connection name e.g identifying server name", required=True)
+    parser_addmount.add_argument("-m", "--mountpoint", help="Mount point", required=True)
+    parser_addmount.add_argument("-u", "--user", help="User name", required=True)
+    parser_addmount.add_argument("-o", "--options", help="Quoted csv options e.g. \"domain=mydomain,ro\"", default=' ', required=False)
     parser_mount = subparsers.add_parser('mount', help="Mount cifs shares, mount -h for help")
     parser_mount.add_argument("-u", action='store_true', help="Unmount the named cifs shares, e.g -a films music", required=False )
     parser_mount.add_argument("-r", "--retries", help="Retry count, useful when systemd is in play", required=False, default=3, type=int )
     parser_mount.add_argument("-w", "--waitsecs", help="Wait time in seconds between retries", required=False, default=5, type=int )
     group = parser_mount.add_mutually_exclusive_group(required=True)
-    group.add_argument("-n", "--names", nargs="+", help="Mount reference names, e.g -a films music. --names and --all are mutually exclusive", required=False)
+    group.add_argument("-n", "--names", nargs="+", help="Mount reference names, e.g -n films music. --names and --all are mutually exclusive", required=False)
     group.add_argument("-a", "--all", action='store_true', help="Mount everything in the cifstab.", required=False)
     parser_removemounts = subparsers.add_parser('removemounts', help="Remove cifs mounts from encrypted cifstab. removemount -h for help")
-    parser_removemounts.add_argument("-a", "--aliases", nargs="+", help="Remove cifs mounts e.g. -a films music", required=True)
+    parser_removemounts.add_argument("-n", "--names", nargs="+", help="Remove cifs mounts e.g. -a films music", required=True)
     parser_listmounts = subparsers.add_parser('listmounts', help="List cifs mounts in encrypted cifstab")
     args = parser.parse_args()
     cifscloak = Cifscloak(retries=getattr(args,'retries',defaultRetries),waitsecs=getattr(args,'waitsecs',defaultWaitSecs))
