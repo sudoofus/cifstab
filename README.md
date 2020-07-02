@@ -6,7 +6,7 @@ Tested on Ubuntu 20.04, python3.8.
 Lesser pythons cause argparse a problem, not had a chance to look into this yet.
 
 ### Quick start:
-Install none default python modules
+Install none default python modules  
 pip3 install cryptography
 
 1/ Create an encrypted cifstab and add a cifs mount.  
@@ -19,16 +19,16 @@ cifscloak.py addmount --name <give_name_to_mount> --sharename <share_name> --mou
 `Password:`
 
 2/ Mount one or more cifs shares.  
-cifscloak.py mount --names <name1> <name2>
-Or mount all shares.
+cifscloak.py mount --names <name1> <name2>  
+Or mount all shares.  
 cifscloak.py mount -a
 
-`sudo ./cifscloak.py mount -n films games`
+`sudo cifscloak.py mount -n films games`
 
 
 3/ Unmount one or more cifs shares.  
-cifscloak.py mount -u --names <name1> <name2>
-Or unmount all cifs shares
+cifscloak.py mount -u --names <name1> <name2>  
+Or unmount all cifs shares  
 cifscloak.py mount -a
 
 `sudo cifscloak.py -u -n films games`
@@ -40,17 +40,16 @@ cifscloak.py mount -a
 5/ Remove one or more cifs shares from the cifstab.  
 cifscloak.py removemounts --names <name1> <name2>
 
-`sudo ./cifscloak.py removemounts -n films games`
+`sudo cifscloak.py removemounts -n films games`
 
-### Install - Temporary during testing
-
+### Install - Temporary during testing  
 python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps  cifscloak 
 
 Results in:  
 /usr/local/bin/cifscloak  
 *Usually  
-I don't seem to be able to set the permissions through the setup.py, help on that would be appreciated!  
-Permissions should be set otherwise the script could be altered to write the passwords somewhere next time root runs the script!  
+I don't seem to be able to set the permissions to 600 through setup.py, help on that would be appreciated!  
+Tight permissions should be set otherwise the script could be altered to dump passwords somewhere next time root executes the script.  
 
 ### Uninstall
 python3 -m pip uninstall cifscloak
