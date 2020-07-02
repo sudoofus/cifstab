@@ -6,7 +6,7 @@ Tested on Ubuntu 20.04, python3.8.
 Lesser pythons cause argparse a problem, not had a chance to look into this yet.
 
 ### Quick start:
-Install none default python modules  
+Install none default python modules
 pip3 install cryptography
 
 1/ Create an encrypted cifstab and add a cifs mount.  
@@ -19,16 +19,16 @@ cifscloak.py addmount --name <give_name_to_mount> --sharename <share_name> --mou
 `Password:`
 
 2/ Mount one or more cifs shares.  
-cifscloak.py mount --names <name1> <name2>  
-Or mount all shares.  
+cifscloak.py mount --names <name1> <name2>
+Or mount all shares.
 cifscloak.py mount -a
 
 `sudo cifscloak.py mount -n films games`
 
 
 3/ Unmount one or more cifs shares.  
-cifscloak.py mount -u --names <name1> <name2>  
-Or unmount all cifs shares  
+cifscloak.py mount -u --names <name1> <name2>
+Or unmount all cifs shares
 cifscloak.py mount -a
 
 `sudo cifscloak.py -u -n films games`
@@ -42,14 +42,15 @@ cifscloak.py removemounts --names <name1> <name2>
 
 `sudo cifscloak.py removemounts -n films games`
 
-### Install - Temporary during testing  
+### Install - Temporary during testing
+
 python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps  cifscloak 
 
 Results in:  
 /usr/local/bin/cifscloak  
 *Usually  
-I don't seem to be able to set the permissions to 600 through setup.py, help on that would be appreciated!  
-Tight permissions should be set otherwise the script could be altered to dump passwords somewhere next time root executes the script.  
+I don't seem to be able to set the permissions through the setup.py, help on that would be appreciated!  
+Permissions should be set otherwise the script could be altered to write the passwords somewhere next time root runs the script!  
 
 ### Uninstall
 python3 -m pip uninstall cifscloak
@@ -99,7 +100,7 @@ I tested this systemd file under Ubuntu 20.04 and it seems to work ok, tbh I'm o
 
 
 ## Help
-### ./cifscloak.py -h
+### cifscloak.py -h
 usage: cifscloak.py [-h] {addmount,removemounts,listmounts,mount} ...
 
 cifscloak - command line utility for mounting cifs shares using encrypted passwords
@@ -115,7 +116,7 @@ positional arguments:
 optional arguments:  
   -h, --help            show this help message and exit
 
-### ./cifscloak.py addmount -h
+### cifscloak.py addmount -h
 
 usage: cifscloak.py addmount [-h] -u USER -s SHARENAME -m MOUNTPOINT [-o OPTIONS] -i ADDRESS -a ALIAS
 
@@ -133,7 +134,7 @@ optional arguments:
   -a ALIAS, --alias ALIAS  Unencrypted identifier for this cifs mount  
  
 
-## ./cifscloak.py removemounts -h
+## cifscloak.py removemounts -h
 
 usage: cifscloak.py removemounts [-h] -a ALIASES [ALIASES ...]
 
@@ -142,7 +143,7 @@ optional arguments:
   -a ALIASES [ALIASES ...], --aliases ALIASES [ALIASES ...]  
                         Remove cifs mounts e.g. -a mnt1 mnt2  
 
-## ./cifscloak.py mount -h
+## cifscloak.py mount -h
 
 usage: cifscloak.py mount [-h] -a ALIASES [ALIASES ...] [-u]
 
