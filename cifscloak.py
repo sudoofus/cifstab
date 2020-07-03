@@ -156,7 +156,6 @@ class Cifscloak():
                 syslog('Returned: {}'.format(proc.returncode))
                 syslog('MountErr: {}'.format(mounterr))
                 if str(mounterr) not in accepterr:
-                    print('"{}"'.format(mounterr))
                     self.status['error'] = 1
                     self.status['messages'].append('{}: {}'.format(name,stderr))
                     sys.stderr.write(stderr)
