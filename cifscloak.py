@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.17'
+version = '1.0.18'
 
 class Cifscloak():
 
@@ -32,7 +32,7 @@ class Cifscloak():
         '''
 
     retryschema = {
-        'mount': {'16':'Device or resource busy'},
+        'mount': {'16':'Device or resource busy','2':'No such file or directory - allow retry, likely to happen at boot with systemd'},
         'umount': ['target is busy.']
         }
 
@@ -40,7 +40,7 @@ class Cifscloak():
         'umount':['not mounted.']
     }
 
-    systemdtemplate = Template('''$comment\n[Unit]\nAfter=multi-user.target\nDescription=cifscloak\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=$path mount $mounts\nExecStop=$path mount -u $mounts\n\n[Install]\nWantedBy=multi-user.target''')
+    systemdtemplate = Template('''$comment\n[Unit]\nAfter=multi-user.target\nDescription=cifscloak\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=$path mount $mounts -r 6\nExecStop=$path mount -u $mounts\n\n[Install]\nWantedBy=multi-user.target''')
 
     def __init__(self,cifstabdir='/root/.cifstab',keyfile='.keyfile',cifstab='.cifstab.db',retries=3,waitsecs=5):
         self.status = { 'error':0, 'successcount':0, 'failedcount':0, 'success':[], 'failed': [], 'attempts': {}, 'messages':[] }
@@ -200,7 +200,6 @@ if __name__ == "__main__":
 
     defaultRetries = 3
     defaultWaitSecs = 5
-    
     parser = argparse.ArgumentParser(description='cifscloak {} | Command line utility for mounting cifs shares using encrypted passwords'.format(version))
     subparsers = parser.add_subparsers(help='Subcommands', dest='subcommand', required=True)   
     parser_addmount = subparsers.add_parser('addmount', help="Add cifs mount to cifstab, addmount -h for help")
