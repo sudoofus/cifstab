@@ -1,4 +1,4 @@
-# Cifscloak
+# Cifscloak 1.0.15
 ### Mount cifs shares using encrypted credentials
 
 Cifscloak is a simple python based solution for encrypting and storing cifs credentials.  
@@ -11,7 +11,7 @@ Ubuntu 20.04, python3.8.
 
 1/ Install
 
-`python3 -m pip install cifscloak`  
+`sudo python3 -m pip install cifscloak`  
 
 Script installs to:  
 /usr/local/bin/cifscloak.py  
