@@ -36,7 +36,7 @@ class Cifscloak():
         'umount': ['target is busy.']
         }
 
-    accepterrscheme = {
+    accepterrschema = {
         'umount':['not mounted.']
     }
 
@@ -121,7 +121,7 @@ class Cifscloak():
                 syslog("Attempting umount {}".format(name))
                 cifscmd = "umount {}".format(cifsmount['mountpoint'])
                 retryon = list(self.retryschema['umount'])
-                accepterr = list(self.accepterrscheme['umount'])
+                accepterr = list(self.accepterrschema['umount'])
             else:
                 syslog("Attempting mount {}".format(name))
                 if not os.path.exists(cifsmount['mountpoint']):
