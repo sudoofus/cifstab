@@ -4,7 +4,7 @@
 Cifscloak is a simple python based solution for encrypting and storing cifs credentials.  
 It plays reasonably well with systemd in that it performs a number of retries meaning that you don't have to call in systemd targets thereby slowing down the boot process.  
 
-### Tested  
+### Tested so far  
 Ubuntu 20.04, python3.8.
 
 ### Quick start:  
