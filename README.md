@@ -1,4 +1,4 @@
-# Cifscloak 1.0.15
+# Cifscloak 1.0.16
 ### Mount cifs shares using encrypted credentials
 
 Cifscloak is a simple python based solution for encrypting and storing cifs credentials.  
@@ -105,10 +105,10 @@ cifscloak - command line utility for mounting cifs shares using encrypted passwo
 positional arguments:  
   {addmount,mount,removemounts,listmounts}  
                         Subcommands  
-    addmount            Add a cifs mount to encrypted cifstab. addmount -h for help  
+    addmount            Add a cifs mount to cifstab, addmount -h for help  
     mount               Mount cifs shares, mount -h for help  
-    removemounts        Remove cifs mounts from encrypted cifstab. removemount -h for help  
-    listmounts          List cifs mounts in encrypted cifstab  
+    removemounts        Remove cifs mounts from cifstab. removemount -h for help  
+    listmounts          Display cifstab shares  
   
 optional arguments:  
   -h, --help            show this help message and exit  

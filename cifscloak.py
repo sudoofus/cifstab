@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.15'
+version = '1.0.16'
 
 class Cifscloak():
 
@@ -200,9 +200,9 @@ if __name__ == "__main__":
     defaultRetries = 3
     defaultWaitSecs = 5
     
-    parser = argparse.ArgumentParser(description='cifscloak {} | Command line utility for mounting cifs shares using encrypted passwords '.format(version))
+    parser = argparse.ArgumentParser(description='cifscloak {} | Command line utility for mounting cifs shares using encrypted passwords'.format(version))
     subparsers = parser.add_subparsers(help='Subcommands', dest='subcommand', required=True)   
-    parser_addmount = subparsers.add_parser('addmount', help="Add a cifs mount to encrypted cifstab. addmount -h for help")
+    parser_addmount = subparsers.add_parser('addmount', help="Add cifs mount to cifstab, addmount -h for help")
     parser_addmount.add_argument("-n", "--name", help="Connection name e.g identifying server name", required=True)
     parser_addmount.add_argument("-s", "--sharename", help="Share name", required=True)
     parser_addmount.add_argument("-i", "--ipaddress", help="Server address or ipaddress", required=True)
@@ -216,9 +216,9 @@ if __name__ == "__main__":
     group = parser_mount.add_mutually_exclusive_group(required=True)
     group.add_argument("-n", "--names", nargs="+", help="Mount reference names, e.g -n films music. --names and --all are mutually exclusive", required=False)
     group.add_argument("-a", "--all", action='store_true', help="Mount everything in the cifstab.", required=False)
-    parser_removemounts = subparsers.add_parser('removemounts', help="Remove cifs mounts from encrypted cifstab. removemount -h for help")
-    parser_removemounts.add_argument("-n", "--names", nargs="+", help="Remove cifs mounts e.g. -a films music", required=True)
-    parser_listmounts = subparsers.add_parser('listmounts', help="List cifs mounts in encrypted cifstab")
+    parser_removemounts = subparsers.add_parser('removemounts', help="Remove cifs mounts from cifstab. removemount -h for help")
+    parser_removemounts.add_argument("-n", "--names", nargs="+", help="Remove cifs mounts from cifstabe.g. -a films music", required=True)
+    parser_listmounts = subparsers.add_parser('listmounts', help="Display cifstab shares")
     parser_systemdfile = subparsers.add_parser('systemdfile', help="Generate systemd unit file output")
     systemdgroup = parser_systemdfile.add_mutually_exclusive_group(required=True)
     systemdgroup.add_argument("-n","--names", nargs="+", help="Add named shares to the systemd unit file")
