@@ -14,7 +14,7 @@ Ubuntu 20.04, python3.8.
 `python3 -m pip install cifscloak`  
 
 Script installs to:  
-/usr/local/bin/cifscloak  
+/usr/local/bin/cifscloak.py  
 
 2/ Create an encrypted cifstab and add cifs mounts.  
 cifscloak.py addmount --name <give_name_to_mount> --sharename <share_name> --mountpoint <mount_point> --i <cifs_server_address> --options <cifs_mount_options> --user cifsusername
