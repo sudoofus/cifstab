@@ -9,10 +9,14 @@ Ubuntu 20.04, python3.8.
 
 ### Quick start:  
 
-1/ `pip3 install cryptography`  
-+Any other missing dependancies.
+1. Install
 
-2/ Create an encrypted cifstab and add cifs mounts.  
+`python3 -m pip install cifscloak`  
+
+Script installs to:  
+/usr/local/bin/cifscloak  
+
+2. Create an encrypted cifstab and add cifs mounts.  
 cifscloak.py addmount --name <give_name_to_mount> --sharename <share_name> --mountpoint <mount_point> --i <cifs_server_address> --options <cifs_mount_options> --user cifsusername
 
 `sudo cifscloak.py addmount -n films -s myfilms -m /mnt/films -i myfileserver -o "ro" -u cifsuser`  
@@ -21,30 +25,30 @@ cifscloak.py addmount --name <give_name_to_mount> --sharename <share_name> --mou
 `sudo cifscloak.py addmount -n games -s mygames -m /mnt/games -i myfileserver -u cifsuser`  
 `Password:`
 
-3/ Mount one or more cifs shares.  
+3. Mount one or more cifs shares.  
 cifscloak.py mount --names <name1> <name2>
 Or mount all shares.
 cifscloak.py mount -a
 
 `sudo cifscloak.py mount -n films games`
 
-4/ Unmount one or more cifs shares.  
+4. Unmount one or more cifs shares.  
 cifscloak.py mount -u --names <name1> <name2>
 Or unmount all cifs shares named in cifstab
 cifscloak.py mount -u -a
 
 `sudo cifscloak.py -u -n films games`
 
-5/ List cifs share aliases stored in the cifstab.  
+5. List cifs share aliases stored in the cifstab.  
 
 `sudo cifscloak.py listmounts`
 
-6/ Remove one or more cifs shares from the cifstab.  
+6. Remove one or more cifs shares from the cifstab.  
 cifscloak.py removemounts --names <name1> <name2>
 
 `sudo cifscloak.py removemounts -n films games`
 
-7/ Create systemd file.  
+7. Create systemd file.  
 
 `sudo cifscloak.py systemdfile -a`
 
@@ -65,13 +69,6 @@ WantedBy=multi-user.target
 `sudo cifscloak.py systemdfile > /etc/systemd/system/cifscloak.service`  
 `systemctl enable cifscloak`  
 `systemctl start cifscloak`  
-
-### Install - Temporary install from test.pypi.org during testing
-
-`python3 -m pip install --index-url https://test.pypi.org/simple/ --no-deps  cifscloak`  
-
-Script installs to:  
-/usr/local/bin/cifscloak  
 
 ### Uninstall
 `python3 -m pip uninstall cifscloak`  
