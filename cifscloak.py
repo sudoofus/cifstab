@@ -18,8 +18,6 @@ version = '1.0.14'
 
 class Cifscloak():
 
-    
-
     cifstabschema = '''
         CREATE TABLE IF NOT EXISTS cifstab(
         name,
@@ -37,6 +35,10 @@ class Cifscloak():
         'mount': {'16':'Device or resource busy'},
         'umount': ['target is busy.']
         }
+
+    accepterrscheme = {
+        'umount':['not mounted.']
+    }
 
     systemdtemplate = Template('''$comment\n[Unit]\nAfter=multi-user.target\nDescription=cifscloak\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=$path mount $mounts\nExecStop=$path mount -u $mounts\n\n[Install]\nWantedBy=multi-user.target''')
 
@@ -119,13 +121,14 @@ class Cifscloak():
                 syslog("Attempting umount {}".format(name))
                 cifscmd = "umount {}".format(cifsmount['mountpoint'])
                 retryon = list(self.retryschema['umount'])
+                accepterr = list(self.accepterrscheme['umount'])
             else:
                 syslog("Attempting mount {}".format(name))
                 if not os.path.exists(cifsmount['mountpoint']):
                     os.makedirs(cifsmount['mountpoint'])
                 cifscmd = "mount -t cifs -o username={},password={},{} //{}/{} {}".format(cifsmount['user'],cifsmount['password'],cifsmount['options'],cifsmount['address'],cifsmount['sharename'],cifsmount['mountpoint'])
                 retryon = list(self.retryschema['mount'])
-            self.execute(cifscmd,name,retryon)
+            self.execute(cifscmd,name,retryon,accepterr)
 
     def encrypt(self,plain):
         return self.key.encrypt(bytes(plain,encoding='utf-8'))
@@ -140,7 +143,7 @@ class Cifscloak():
             credentials = { 'name':r[0], 'address':self.decrypt(r[1]), 'sharename':self.decrypt(r[2]), 'mountpoint':self.decrypt(r[3]), 'options':self.decrypt(r[4]), 'user':self.decrypt(r[5]), 'password':self.decrypt(r[6]) }
         return credentials
 
-    def execute(self,cmd,name,retryon=[],expectedreturn=0):
+    def execute(self,cmd,name,retryon=[],accepterr=[],expectedreturn=0):
         returncode = None
         self.status['attempts'][name] = 0
         while returncode != expectedreturn and self.status['attempts'][name] < self.retries:
@@ -152,19 +155,21 @@ class Cifscloak():
                 syslog('Error: {}'.format(stderr))
                 syslog('Returned: {}'.format(proc.returncode))
                 syslog('MountErr: {}'.format(mounterr))
-                self.status['error'] = 1
-                self.status['messages'].append('{}: {}'.format(name,stderr))
-                sys.stderr.write(stderr)
-                if str(mounterr) in retryon:
-                    time.sleep(self.waitsecs)
-                else:
-                    message = 'mounterr {} not in retryschema, no retry attempt will be made'.format(mounterr)
-                    syslog(message)
-                    break
+                if str(mounterr) not in accepterr:
+                    print('"{}"'.format(mounterr))
+                    self.status['error'] = 1
+                    self.status['messages'].append('{}: {}'.format(name,stderr))
+                    sys.stderr.write(stderr)
+                    if str(mounterr) in retryon:
+                        time.sleep(self.waitsecs)
+                    else:
+                        message = 'mounterr {} not in retryschema, no retry attempt will be made'.format(mounterr)
+                        syslog(message)
+                        break
 
             self.status['attempts'][name] += 1
                 
-        if returncode != expectedreturn:
+        if returncode != expectedreturn and str(mounterr) not in accepterr:
             self.status['error'] = 1
             self.status['failed'].append(name)
             self.status['failedcount'] += 1
@@ -179,8 +184,7 @@ class Cifscloak():
         if args.all:
             template['mounts'] = '-a'
         else:
-            wantedmounts = list(dict.fromkeys(args.names))
-            for mount in wantedmounts:
+            for mount in list(dict.fromkeys(args.names)):
                 if mount not in listmounts:
                     notpresent.append(mount)
             if len(notpresent):
@@ -208,8 +212,8 @@ if __name__ == "__main__":
     parser_addmount.add_argument("-o", "--options", help="Quoted csv options e.g. \"domain=mydomain,ro\"", default=' ', required=False)
     parser_mount = subparsers.add_parser('mount', help="Mount cifs shares, mount -h for help")
     parser_mount.add_argument("-u", action='store_true', help="Unmount the named cifs shares, e.g -a films music", required=False )
-    parser_mount.add_argument("-r", "--retries", help="Retry count, useful when systemd is in play", required=False, default=3, type=int )
-    parser_mount.add_argument("-w", "--waitsecs", help="Wait time in seconds between retries", required=False, default=5, type=int )
+    parser_mount.add_argument("-r", "--retries", help="Optional ( default: 3 ) - Retry count, useful when systemd is in play", required=False, default=3, type=int )
+    parser_mount.add_argument("-w", "--waitsecs", help="Optional ( default: 5 seconds ) - Wait time in seconds between retries", required=False, default=5, type=int )
     group = parser_mount.add_mutually_exclusive_group(required=True)
     group.add_argument("-n", "--names", nargs="+", help="Mount reference names, e.g -n films music. --names and --all are mutually exclusive", required=False)
     group.add_argument("-a", "--all", action='store_true', help="Mount everything in the cifstab.", required=False)
