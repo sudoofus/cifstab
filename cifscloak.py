@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.18'
+version = '1.0.19'
 
 class Cifscloak():
 
@@ -32,7 +32,7 @@ class Cifscloak():
         '''
 
     retryschema = {
-        'mount': {'16':'Device or resource busy','2':'No such file or directory - allow retry, likely to happen at boot with systemd'},
+        'mount': {'2':'No such file or directory - allow retry, likely to happen at boot with systemd'},
         'umount': ['target is busy.']
         }
 
@@ -93,12 +93,13 @@ class Cifscloak():
             self.db.commit()
     
     def listmounts(self,args,quiet=False):
-        mounts = []
-        self.cursor.execute('''SELECT name FROM cifstab''')
+        mounts = {}
+        self.cursor.execute('''SELECT name,address,sharename,mountpoint,options FROM cifstab''')
         for r in self.cursor:
-            mounts.append(r[0])
-            if not quiet:
-                print(r[0])
+            mounts[r[0]] = { 'name':r[0], 'host':self.decrypt(r[1]), 'share':self.decrypt(r[2]), 'mountpoint':self.decrypt(r[3]), 'options':('',self.decrypt(r[4]))[self.decrypt(r[4])!=' '] }        
+        if not quiet:
+            print(json.dumps(mounts,indent=4))
+
         return mounts
 
     def mount(self,args):
