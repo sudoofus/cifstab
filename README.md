@@ -44,14 +44,14 @@ cifscloak.py mount -u -a
 `sudo cifscloak.py listmounts`
 
   {  
-      "minecraft": {  
+      "films": {  
           "name": "films",  
           "host": "myfileserver",  
           "share": "myfilms",  
           "mountpoint": "/mnt/films",  
           "options": "ro"  
       },  
-      "depot": {  
+      "games": {  
           "name": "games",  
           "host": "myfileserver",  
           "share": "mygames",  
