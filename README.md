@@ -1,8 +1,7 @@
-# Cifscloak 1.0.19
+# Cifscloak 1.0.20
 ### Mount cifs shares using encrypted credentials
 
 Cifscloak is a simple python based solution for encrypting and storing cifs credentials.  
-It plays reasonably well with systemd in that it performs a number of retries meaning that you don't have to call in systemd targets thereby slowing down the boot process.  
 
 ### Tested so far  
 Ubuntu 20.04, python3.8.
@@ -26,16 +25,16 @@ cifscloak.py addmount --name <give_name_to_mount> --sharename <share_name> --mou
 `Password:`
 
 3/ Mount one or more cifs shares.  
-cifscloak.py mount --names <name1> <name2>
-Or mount all shares.
-cifscloak.py mount -a
+cifscloak.py mount --names <name1> <name2>  
+Or mount all shares.  
+cifscloak.py mount -a  
 
 `sudo cifscloak.py mount -n films games`
 
 4/ Unmount one or more cifs shares.  
-cifscloak.py mount -u --names <name1> <name2>
-Or unmount all cifs shares named in cifstab
-cifscloak.py mount -u -a
+cifscloak.py mount -u --names <name1> <name2>  
+Or unmount all cifs shares named in cifstab  
+cifscloak.py mount -u -a  
 
 `sudo cifscloak.py -u -n films games`
 
@@ -102,14 +101,15 @@ The following directory and files are created the first time that the script is 
 cryptography.fernet is used to generate the .keyfile and take care of encryption.  
 sqlite3 is used to store encrypted cifs information into /root/.cifstab/.cifstab.db
 
-Of course if you have the .keyfile and cifstab.db it is going to be really easy to decrypt and display the passwords.  
-Be sure that the cifscloak.py script is not writable by anyone except root otherwise it will be trivial for users to have it write out the passwords somewhere the next time that the script is executed.
+Of course if you have the .keyfile and cifstab.db it is really easy to decrypt and display the passwords.  
+Be sure that the cifscloak.py script is not writable by anyone except root otherwise it would be trivial for a user to modify the script to have it write out the passwords somewhere  next time the script is executed.
 
 For example:  
 > 550 /usr/bin/cifscloak.py
 
 ### Mount cifs shares at boot time through systemd
-Cifscloak can generate a simple systemd file that seems to work fine for me on Ubuntu. Initially I did not write in any retry mechanism because it just felt sloppy but after systemd gave me a bit of a ride ( through my lack of understanding ) and I read the documentation which suggested that causing the boot to wait is bad, I instead wrote in a retry.  
+Cifscloak can generate a simple systemd file that seems to work fine for me on Ubuntu and Centos 8.  
+Initially I did not write in any retry mechanism because it just felt sloppy but after systemd gave me a bit of a ride ( through my lack of understanding ) and after reading the documentation ( which suggested that causing the boot to wait is bad ), I instead wrote in a retry. Retrying 6 times seems to get the mounts sorted during boot. 
 
 * Mountpoint directories are automatically created with default permissions.
 
