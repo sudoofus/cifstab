@@ -1,4 +1,4 @@
-# Cifscloak 1.0.18
+# Cifscloak 1.0.19
 ### Mount cifs shares using encrypted credentials
 
 Cifscloak is a simple python based solution for encrypting and storing cifs credentials.  
@@ -43,22 +43,22 @@ cifscloak.py mount -u -a
 
 `sudo cifscloak.py listmounts`
 
-  {
-      "minecraft": {
-          "name": "films",
-          "host": "myfileserver",
-          "share": "myfilms",
-          "mountpoint": "/mnt/films",
-          "options": "ro"
-      },
-      "depot": {
-          "name": "games",
-          "host": "myfileserver",
-          "share": "mygames",
-          "mountpoint": "/mnt/games",
-          "options": ""
-      }
-  }
+  {  
+      "minecraft": {  
+          "name": "films",  
+          "host": "myfileserver",  
+          "share": "myfilms",  
+          "mountpoint": "/mnt/films",  
+          "options": "ro"  
+      },  
+      "depot": {  
+          "name": "games",  
+          "host": "myfileserver",  
+          "share": "mygames",  
+          "mountpoint": "/mnt/games",  
+          "options": ""  
+      }  
+  }  
 
 6/ Remove one or more cifs shares from the cifstab.  
 cifscloak.py removemounts --names <name1> <name2>
