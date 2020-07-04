@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.20'
+version = '1.0.21'
 
 class Cifscloak():
 
@@ -73,7 +73,7 @@ class Cifscloak():
     def checkstatus(self):
         if self.status['error']:
             print(json.dumps(self.status,indent=4))
-        parser.exit(status=cifscloak.status['error'])
+        parser.exit(status=self.status['error'])
 
     def addmount(self,args):
         password = getpass()
