@@ -10,9 +10,9 @@ Ubuntu 20.04, python3.8.
 
 1/ Install
 
-`sudo python3 -m pip install cifscloak`  
 Latest:
-`sudo pip3 install https://github.com/sudoofus/cifscloak.git`
+`sudo pip3 install https://github.com/sudoofus/cifscloak.git`  
+`sudo python3 -m pip install cifscloak`  
 
 Script installs to:  
 /usr/local/bin/cifscoak  

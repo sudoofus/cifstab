@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# cifscloak - dazchambers@gmail.com
 
 import os
 import sys

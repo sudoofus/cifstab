@@ -19,6 +19,5 @@ setuptools.setup(
 	'argparse',
 	'regex',
     ],
-
     entry_points = { 'console_scripts':['cifscloak = cifscloak.cifscloak:main'] }
 )
