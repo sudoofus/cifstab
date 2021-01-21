@@ -11,7 +11,7 @@ Ubuntu 20.04, python3.8.
 1/ Install
 
 Latest:  
-`sudo pip3 install git+https://github.com/hv-ps/hiraid.git`  
+`sudo pip3 install git+https://github.com/sudoofus/cifscloak.git`  
 
 From PyPi:  
 `sudo python3 -m pip install cifscloak`  
