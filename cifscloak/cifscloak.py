@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# cifscloak - dazchambers@gmail.com
 
 import os
 import sys
@@ -15,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.22'
+version = '1.0.24'
 
 class Cifscloak():
 

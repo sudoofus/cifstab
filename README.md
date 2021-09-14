@@ -1,4 +1,4 @@
-# Cifscloak 1.0.22
+# Cifscloak
 ### Mount cifs shares using encrypted credentials
 
 Cifscloak is a simple python script for encrypting and storing cifs credentials.  
@@ -10,10 +10,8 @@ Ubuntu 20.04, python3.8.
 
 1/ Install
 
-Latest:  
-`sudo pip3 install git+https://github.com/sudoofus/cifscloak.git`  
-
-From PyPi:  
+Latest:
+`sudo pip3 install https://github.com/sudoofus/cifscloak.git`  
 `sudo python3 -m pip install cifscloak`  
 
 Script installs to:  
@@ -106,10 +104,10 @@ cryptography.fernet is used to generate the .keyfile and take care of encryption
 sqlite3 is used to store encrypted cifs information into /root/.cifstab/.cifstab.db
 
 Of course if you have the .keyfile and cifstab.db it is really easy to decrypt and display the passwords.  
-Be sure that the cifscloak script is not writable by anyone except root otherwise it would be trivial for a user to modify the script to have it write out the passwords somewhere next time the script is executed.
+Be sure that the cifscloak script is not writable by anyone except root otherwise it would be trivial for a user to modify the script to have it write out the passwords somewhere  next time the script is executed.
 
 For example:  
-> 550 /usr/local/bin/cifscloak
+> 550 /usr/bin/cifscloak
 
 ### Mount cifs shares at boot time through systemd
 Cifscloak can generate a simple systemd file that seems to work fine for me on Ubuntu and Centos 8.  
