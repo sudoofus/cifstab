@@ -6,7 +6,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='cifscloak',
-    version='1.0.24',
+    version='1.0.25',
     description='Mount cifs shares using encrypted passwords',
     long_description=long_description,
     long_description_content_type='text/markdown',
