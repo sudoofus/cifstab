@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.24'
+version = '1.0.25'
 
 class Cifscloak():
 
@@ -152,7 +152,10 @@ class Cifscloak():
             stdout, stderr = proc.communicate()
             returncode = proc.returncode
             if proc.returncode and proc.returncode != expectedreturn:
-                mounterr = regex.search(r'(?|error\((\d+)\)|.+:.+:\s{1}(.+))',stderr).group(1)
+                try:
+                    mounterr = regex.search(r'(?|error\((\d+)\)|.+:.+:\s{1}(.+))',stderr).group(1)
+                except:
+                    mounterr = stderr
                 syslog('Error: {}'.format(stderr))
                 syslog('Returned: {}'.format(proc.returncode))
                 syslog('MountErr: {}'.format(mounterr))
