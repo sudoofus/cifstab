@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.25'
+version = '1.0.26'
 
 class Cifscloak():
 
@@ -75,7 +75,10 @@ class Cifscloak():
             print(json.dumps(self.status,indent=4))
 
     def addmount(self,args):
-        password = getpass()
+        if args.password is not None:
+            password = args.password
+        else:
+            password = getpass()
         try:
             self.cursor.execute('''
             INSERT INTO cifstab (name,address,sharename,mountpoint,options,user,password)
@@ -210,6 +213,7 @@ def main():
     parser_addmount.add_argument("-i", "--ipaddress", help="Server address or ipaddress", required=True)
     parser_addmount.add_argument("-m", "--mountpoint", help="Mount point", required=True)
     parser_addmount.add_argument("-u", "--user", help="User name", required=True)
+    parser_addmount.add_argument("-p", "--password", help="Allows a password to be specified on the command line, otherwise getpass is used and password entry is hidden", default=None, required=False)
     parser_addmount.add_argument("-o", "--options", help="Quoted csv options e.g. \"domain=mydomain,ro\"", default=' ', required=False)
     parser_mount = subparsers.add_parser('mount', help="Mount cifs shares, mount -h for help")
     parser_mount.add_argument("-u", action='store_true', help="Unmount the named cifs shares, e.g -a films music", required=False )

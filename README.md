@@ -146,6 +146,8 @@ optional arguments:
   -m MOUNTPOINT, --mountpoint MOUNTPOINT  
                         Mount point  
   -u USER, --user USER  User name  
+  -p PASSWORD, --password PASSWORD  
+                        Allows a password to be specified on the command line, otherwise getpass is used and password entry is hidden  
   -o OPTIONS, --options OPTIONS  
                         Quoted csv options e.g. "domain=mydomain,ro"   
  
