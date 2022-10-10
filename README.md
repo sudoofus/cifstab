@@ -115,6 +115,12 @@ Initially I did not write in any retry mechanism because it just felt sloppy but
 
 * Mountpoint directories are automatically created with default permissions.
 
+### Using multiple instances 
+
+You can define environment variable CIFSCLOAK_HOME and use different instances. Example:
+
+`export CIFSCLOAK_HOME=/root/.cifstab.office`
+
 ## Help
 ### cifscloak -h
 usage: cifscloak [-h] {addmount,mount,removemounts,listmounts} ...  

@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.24'
+version = '1.0.25'
 
 class Cifscloak():
 
@@ -223,7 +223,13 @@ def main():
     systemdgroup.add_argument("-n","--names", nargs="+", help="Add named shares to the systemd unit file")
     systemdgroup.add_argument("-a","--all", action='store_true', help="Add all cifstab shares to the systemd unit file")
     args = parser.parse_args()
-    cifscloak = Cifscloak(retries=getattr(args,'retries',defaultRetries),waitsecs=getattr(args,'waitsecs',defaultWaitSecs))
+    cifscloak_home=os.environ['CIFSCLOAK_HOME']
+    cifscloak_home = '/root/.cifstab' if len(cifscloak_home)==0 else cifscloak_home
+    cifscloak = Cifscloak(cifstabdir=cifscloak_home, 
+                          keyfile='.keyfile', 
+                          cifstab='.cifstab.db', 
+                          retries=getattr(args,'retries',defaultRetries),
+                          waitsecs=getattr(args,'waitsecs',defaultWaitSecs))
     getattr(cifscloak, args.subcommand)(args)
     cifscloak.checkstatus()
     parser.exit(status=cifscloak.status['error'])
