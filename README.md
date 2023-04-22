@@ -11,7 +11,7 @@ Ubuntu 20.04, python3.8.
 1/ Install
 
 Latest:
-`sudo pip3 install https://github.com/sudoofus/cifscloak.git`  
+`sudo pip3 install git+https://github.com/sudoofus/cifscloak.git`  
 `sudo python3 -m pip install cifscloak`  
 
 Script installs to:  
@@ -95,7 +95,7 @@ WantedBy=multi-user.target
 ### Synopsis
 This utility should be run through sudo or directly as root.
 
-The following directory and files are created the first time that the script is executed:  
+When executed as the root user the following directory and files are created the first time that the script is executed:  
 > 0755 /root/.cifstab/  
 > 0400 /root/.cifstab/.keyfile  
 > 0644 /root/.cifstab/.cifstab.db  
@@ -108,6 +108,14 @@ Be sure that the cifscloak script is not writable by anyone except root otherwis
 
 For example:  
 > 550 /usr/bin/cifscloak
+
+The .cifstab directory is created in the home (~) directory of the user running the script, the directory can also be overridden with environment variable 'CIFSCLOAK_HOME' e.g.  
+> export CIFSCLOAK_HOME='/home/sudoodus'  
+
+This will have the effect of creating the following .cifstab directory  
+> /home/sudoodus/.cifstab/  
+
+Alternatively the .cifstab directory is created in the home directory of whichever user running the script.  
 
 ### Mount cifs shares at boot time through systemd
 Cifscloak can generate a simple systemd file that seems to work fine for me on Ubuntu and Centos 8.  
@@ -185,3 +193,8 @@ optional arguments:
                         Add named shares to the systemd unit file  
   -a, --all             Add all cifstab shares to the systemd unit file  
   
+### Shout out
+
+Thank you to mgazzin ( https://github.com/mgazzin ) for suggesting CIFSCLOAK_HOME, implemented in v1.0.27  
+
+Thank you to thesnipiid ( https://github.com/thesnipiid ) for improving reliability by suggesting quotes around the passord field, implemented in v1.0.27  

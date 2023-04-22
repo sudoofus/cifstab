@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.26'
+version = '1.0.27'
 
 class Cifscloak():
 
@@ -41,8 +41,8 @@ class Cifscloak():
     }
 
     systemdtemplate = Template('''$comment\n[Unit]\nAfter=multi-user.target\nDescription=cifscloak\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=$path mount $mounts -r 6\nExecStop=$path mount -u $mounts\n\n[Install]\nWantedBy=multi-user.target''')
-
-    def __init__(self,cifstabdir='/root/.cifstab',keyfile='.keyfile',cifstab='.cifstab.db',retries=3,waitsecs=5):
+    
+    def __init__(self,cifstabdir=os.environ.get('CIFSCLOAK_HOME',os.path.expanduser("~"))+os.sep+'.cifstab',keyfile='.keyfile',cifstab='.cifstab.db',retries=3,waitsecs=5):
         self.status = { 'error':0, 'successcount':0, 'failedcount':0, 'success':[], 'failed': [], 'attempts': {}, 'messages':[] }
         self.mountprocs = {}
         self.retries = retries
@@ -79,6 +79,7 @@ class Cifscloak():
             password = args.password
         else:
             password = getpass()
+
         try:
             self.cursor.execute('''
             INSERT INTO cifstab (name,address,sharename,mountpoint,options,user,password)
@@ -129,7 +130,7 @@ class Cifscloak():
                 syslog("Attempting mount {}".format(name))
                 if not os.path.exists(cifsmount['mountpoint']):
                     os.makedirs(cifsmount['mountpoint'])
-                cifscmd = "mount -t cifs -o username={},password={},{} //{}/{} {}".format(cifsmount['user'],cifsmount['password'],cifsmount['options'],cifsmount['address'],cifsmount['sharename'],cifsmount['mountpoint'])
+                cifscmd = "mount -t cifs -o username={},password='{}',{} //{}/{} {}".format(cifsmount['user'],cifsmount['password'],cifsmount['options'],cifsmount['address'],cifsmount['sharename'],cifsmount['mountpoint'])
                 retryon = list(self.retryschema['mount'])
                 accepterr = list(self.accepterrschema.get('mount',[]))
             self.execute(cifscmd,name,retryon,accepterr)
