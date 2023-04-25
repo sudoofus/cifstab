@@ -115,7 +115,7 @@ The .cifstab directory is created in the home (~) directory of the user running 
 This will have the effect of creating the following .cifstab directory  
 > /home/sudoodus/.cifstab/  
 
-Alternatively the .cifstab directory is created in the home directory of whichever user running the script.  
+Alternatively the .cifstab directory is created in the home directory of whichever user is running the script.  
 
 ### Mount cifs shares at boot time through systemd
 Cifscloak can generate a simple systemd file that seems to work fine for me on Ubuntu and Centos 8.  
