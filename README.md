@@ -110,10 +110,10 @@ For example:
 > 550 /usr/bin/cifscloak
 
 The .cifstab directory is created in the home (~) directory of the user running the script, the directory can also be overridden with environment variable 'CIFSCLOAK_HOME' e.g.  
-> export CIFSCLOAK_HOME='/home/sudoodus'  
+> export CIFSCLOAK_HOME='/home/sudoofus'  
 
 This will have the effect of creating the following .cifstab directory  
-> /home/sudoodus/.cifstab/  
+> /home/sudoofus/.cifstab/  
 
 Alternatively the .cifstab directory is created in the home directory of whichever user is running the script.  
 
@@ -197,4 +197,4 @@ optional arguments:
 
 Thank you to mgazzin ( https://github.com/mgazzin ) for suggesting CIFSCLOAK_HOME, implemented in v1.0.27  
 
-Thank you to thesnipiid ( https://github.com/thesnipiid ) for improving reliability by suggesting quotes around the passord field, implemented in v1.0.27  
+Thank you to thesnipiid ( https://github.com/thesnipiid ) for improving reliability by suggesting quotes around the password field, implemented in v1.0.27  
