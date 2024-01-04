@@ -16,6 +16,9 @@ Latest:
 
 Script installs to:  
 /usr/local/bin/cifscloak  
+Included an easier console script name at v1.0.29  
+/usr/local/bin/cifsfs  
+Now you can type 'cifsfs' command instead of 'cifscloak'  
 
 2/ Create an encrypted cifstab and add cifs mounts.  
 cifscloak addmount --name <give_name_to_mount> --sharename <share_name> --mountpoint <mount_point> --i <cifs_server_address> --options <cifs_mount_options> --user cifsusername

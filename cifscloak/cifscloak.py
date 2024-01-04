@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.28'
+version = '1.0.29'
 
 class Cifscloak():
 
