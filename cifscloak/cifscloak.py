@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.31'
+version = '1.0.32'
 
 class Cifscloak():
 
@@ -150,12 +150,12 @@ class Cifscloak():
             credentials = { 'name':r[0], 'address':self.decrypt(r[1]), 'sharename':self.decrypt(r[2]), 'mountpoint':self.decrypt(r[3]), 'options':self.decrypt(r[4]), 'user':self.decrypt(r[5]), 'password':self.decrypt(r[6]) }
         return credentials
 
-    def execute(self,cmd,name,passwd,operation,retryon=[],accepterr=[],expectedreturn=0):
+    def execute(self,cmd,name,passwd,operation,retryon=[],accepterr=[],expectedreturn=0,pexpecttimeout=3):
 
         returncode = None
         self.status['attempts'][name] = 0
         while returncode != expectedreturn and self.status['attempts'][name] < self.retries:
-            child = pexpect.spawn(cmd, timeout=3)
+            child = pexpect.spawn(cmd, timeout=pexpecttimeout)
             if operation == "mount":
                 if child.expect([pexpect.TIMEOUT, "Password.*"]) != 1:
                     raise Exception("Password prompt not detected")
