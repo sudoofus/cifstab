@@ -6,15 +6,15 @@ import stat
 import time
 import json
 import regex
+import pexpect
 import sqlite3
 import argparse
-import subprocess
 from syslog import syslog
 from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.30'
+version = '1.0.31'
 
 class Cifscloak():
 
@@ -126,15 +126,16 @@ class Cifscloak():
                 cifscmd = "umount {}".format(cifsmount['mountpoint'])
                 retryon = list(self.retryschema['umount'])
                 accepterr = list(self.accepterrschema.get('umount',[]))
+                operation = "umount"
             else:
                 syslog("Attempting mount {}".format(name))
                 if not os.path.exists(cifsmount['mountpoint']):
                     os.makedirs(cifsmount['mountpoint'])
-                passwd = cifsmount['password'].replace("'", r"\'").replace('"', r'\"').replace(';', r'\;')
-                cifscmd = "PASSWD={} mount -t cifs -o username={},{} //{}/{} {}".format(passwd,cifsmount['user'],cifsmount['options'],cifsmount['address'],cifsmount['sharename'],cifsmount['mountpoint'])
+                cifscmd = "/usr/bin/mount -t cifs -o username={},{} //{}/{} {}".format(cifsmount['user'],cifsmount['options'],cifsmount['address'],cifsmount['sharename'],cifsmount['mountpoint'])
                 retryon = list(self.retryschema['mount'])
                 accepterr = list(self.accepterrschema.get('mount',[]))
-            self.execute(cifscmd,name,retryon,accepterr)
+                operation = "mount"
+            self.execute(cifscmd,name,cifsmount['password'],operation,retryon,accepterr)
 
     def encrypt(self,plain):
         return self.key.encrypt(bytes(plain,encoding='utf-8'))
@@ -149,34 +150,47 @@ class Cifscloak():
             credentials = { 'name':r[0], 'address':self.decrypt(r[1]), 'sharename':self.decrypt(r[2]), 'mountpoint':self.decrypt(r[3]), 'options':self.decrypt(r[4]), 'user':self.decrypt(r[5]), 'password':self.decrypt(r[6]) }
         return credentials
 
-    def execute(self,cmd,name,retryon=[],accepterr=[],expectedreturn=0):
+    def execute(self,cmd,name,passwd,operation,retryon=[],accepterr=[],expectedreturn=0):
+
         returncode = None
         self.status['attempts'][name] = 0
         while returncode != expectedreturn and self.status['attempts'][name] < self.retries:
-            proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, shell=True)
-            stdout, stderr = proc.communicate()
-            returncode = proc.returncode
-            if proc.returncode and proc.returncode != expectedreturn:
+            child = pexpect.spawn(cmd, timeout=3)
+            if operation == "mount":
+                if child.expect([pexpect.TIMEOUT, "Password.*"]) != 1:
+                    raise Exception("Password prompt not detected")
+                child.sendline(passwd)
+            output = [row.strip() for row in list(filter(None,child.read().decode("utf-8").split('\n')))]
+            if operation == "mount": output.pop(0)
+            output = '\n'.join(output)
+            child.expect(pexpect.EOF)
+            child.close()
+            returncode = child.exitstatus
+            if returncode and returncode != expectedreturn:
                 try:
-                    mounterr = regex.search(r'(?|error\((\d+)\)|.+:.+:\s{1}(.+))',stderr).group(1)
+                    mounterr = regex.search(r'(?|error\((\d+)\)|.+:.+:\s{1}(.+))',output).group(1)
                 except:
-                    mounterr = stderr
-                syslog('Error: {}'.format(stderr))
-                syslog('Returned: {}'.format(proc.returncode))
+                    mounterr = output
+                syslog('Error: {}'.format(output))
+                syslog('Returned: {}'.format(returncode))
                 syslog('MountErr: {}'.format(mounterr))
+
                 if str(mounterr) not in accepterr:
+                    self.status['attempts'][name] += 1
                     self.status['error'] = 1
-                    self.status['messages'].append('{}: {}'.format(name,stderr))
-                    sys.stderr.write(stderr)
+                    self.status['messages'].append('{}: {}'.format(name,output))
+                    sys.stderr.write(output)
                     if str(mounterr) in retryon:
                         time.sleep(self.waitsecs)
                     else:
                         message = 'mounterr {} not in retryschema, no retry attempt will be made'.format(mounterr)
                         syslog(message)
                         break
+                else:
+                    break
 
             self.status['attempts'][name] += 1
-                
+
         if returncode != expectedreturn and str(mounterr) not in accepterr:
             self.status['error'] = 1
             self.status['failed'].append(name)
