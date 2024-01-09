@@ -4,7 +4,7 @@
 Cifscloak is a simple python script for encrypting and storing cifs credentials.  
 
 ### Tested so far  
-Ubuntu 20.04, Redhat, Centos, python3.8.
+Ubuntu 20.04, Redhat, Centos, Oracle Linux, python3.8.
 
 ### Quick start:  
 
