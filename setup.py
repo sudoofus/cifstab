@@ -18,6 +18,7 @@ setuptools.setup(
 	'cryptography',
 	'argparse',
     'pexpect',
+    'sqlite3',
 	'regex',
     ],
     entry_points = { 'console_scripts':['cifscloak = cifscloak.cifscloak:main', 'cifsfs = cifscloak.cifscloak:main'] }
