@@ -81,13 +81,13 @@ Description=cifscloak
 [Service]  
 Type=oneshot  
 RemainAfterExit=yes  
-ExecStart=/usr/local/bin/cifscloak mount -a  
+ExecStart=/usr/local/bin/cifscloak mount -a -r 6  
 ExecStop=/usr/local/bin/cifscloak mount -u -a  
   
 [Install]  
 WantedBy=multi-user.target  
 
-`sudo cifscloak systemdfile > /etc/systemd/system/cifscloak.service`  
+`sudo cifscloak systemdfile -a > /etc/systemd/system/cifscloak.service`  
 `systemctl enable cifscloak`  
 `systemctl start cifscloak`  
 
@@ -122,7 +122,7 @@ Alternatively the .cifstab directory is created in the home directory of whichev
 
 ### Mount cifs shares at boot time through systemd
 Cifscloak can generate a simple systemd file that seems to work fine for me on Ubuntu and Centos 8.  
-Initially I did not write in any retry mechanism because it just felt sloppy but after systemd gave me a bit of a ride ( through my lack of understanding ) and after reading the documentation ( which suggested that causing the boot to wait is bad ), I instead wrote in a retry. Retrying 6 times seems to get the mounts sorted during boot. 
+Initially I did not write in any retry mechanism because it just felt sloppy but after systemd gave me a bit of a ride ( through my lack of understanding ) and after reading the documentation ( which suggested that causing the boot to wait is bad ), I instead wrote in a retry. Retrying 6 times seems to get the mounts sorted during boot, -r 6 is added to the systemd file by default. 
 
 * Mountpoint directories are automatically created with default permissions.
 
