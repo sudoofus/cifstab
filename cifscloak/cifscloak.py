@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.32'
+version = '1.0.33'
 
 class Cifscloak():
 
@@ -131,7 +131,7 @@ class Cifscloak():
                 syslog("Attempting mount {}".format(name))
                 if not os.path.exists(cifsmount['mountpoint']):
                     os.makedirs(cifsmount['mountpoint'])
-                cifscmd = "/usr/bin/mount -t cifs -o username={},{} //{}/{} {}".format(cifsmount['user'],cifsmount['options'],cifsmount['address'],cifsmount['sharename'],cifsmount['mountpoint'])
+                cifscmd = "mount -t cifs -o username={},{} //{}/{} {}".format(cifsmount['user'],cifsmount['options'],cifsmount['address'],cifsmount['sharename'],cifsmount['mountpoint'])
                 retryon = list(self.retryschema['mount'])
                 accepterr = list(self.accepterrschema.get('mount',[]))
                 operation = "mount"
