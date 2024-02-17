@@ -14,7 +14,7 @@ from getpass import getpass
 from string import Template
 from cryptography.fernet import Fernet
 
-version = '1.0.33'
+version = '1.0.34'
 
 class Cifscloak():
 
@@ -222,7 +222,8 @@ def main():
     defaultRetries = 3
     defaultWaitSecs = 5
     parser = argparse.ArgumentParser(description='cifscloak {} | Command line utility for mounting cifs shares using encrypted passwords'.format(version))
-    subparsers = parser.add_subparsers(help='Subcommands', dest='subcommand', required=True)   
+    subparsers = parser.add_subparsers(help='Subcommands', dest='subcommand')
+    subparsers.required = True
     parser_addmount = subparsers.add_parser('addmount', help="Add cifs mount to cifstab, addmount -h for help")
     parser_addmount.add_argument("-n", "--name", help="Connection name e.g identifying server name", required=True)
     parser_addmount.add_argument("-s", "--sharename", help="Share name", required=True)

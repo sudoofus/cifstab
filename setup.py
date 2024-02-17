@@ -6,7 +6,7 @@ with open('README.md', 'r') as fh:
 
 setuptools.setup(
     name='cifscloak',
-    version='1.0.33',
+    version='1.0.34',
     description='Mount cifs shares using encrypted passwords',
     long_description=long_description,
     long_description_content_type='text/markdown',
@@ -15,10 +15,10 @@ setuptools.setup(
     url='https://github.com/sudoofus/cifscloak',
     packages=setuptools.find_packages(),
     install_requires=[
-	'cryptography',
-	'argparse',
-    'pexpect',
-	'regex',
-    ],
+        'cryptography',
+        'argparse',
+        'pexpect',
+        'regex'
+        ],
     entry_points = { 'console_scripts':['cifscloak = cifscloak.cifscloak:main', 'cifsfs = cifscloak.cifscloak:main'] }
 )
