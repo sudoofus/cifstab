@@ -120,6 +120,28 @@ This will have the effect of creating the following .cifstab directory
 
 Alternatively the .cifstab directory is created in the home directory of whichever user is running the script.  
 
+### Example
+`sudo cifscloak addmount -n films -s myfilms -m /mnt/films -i myfileserver -o "ro" -u cifsuser`  
+`Password:`  
+
+`sqlite> .schema cifstab`
+
+```CREATE TABLE cifstab(
+        name,
+        address,
+        sharename,
+        mountpoint,
+        options,
+        user,
+        password,
+        PRIMARY KEY (name)
+        );
+```
+`sqlite> select * from cifstab;`
+
+```films|gAAAAABl0KUkN57RMohIrenfwERNZYzEWqDZSGC50o-vwp1rcNkZMDk_5aD1XSpRJQplC3JmGBLJn9DqKwOHqAIVqUZscMAdpA==|gAAAAABl0KUlINxD3l2xtTCclaHz7YqWTh-GeyyYRhmWNeKVI6C3CoAQb4nEd_bKGSAb2tfevFuZnv6snkcTLYuf3I4GT30LSw==|gAAAAABl0KUlXF42gwBXOq3lAe7McKPrp9eWgY4ecCFP9Qmh0rIef42_vckACXvLtu-Fwi5ApO1Kb9waLTrSUNzLdXGgoBZoXQ==|gAAAAABl0KUlLg927C7PlSteAfpG0q2BNRpcFshsbWfSWxqH5JB9tIK2g0Mduh-ckStYOP0OiCV2xByvKufzboTrUjy61rb1wg==|gAAAAABl0KUlWBGAzK4NjGdOOUjKGZA3kE09AG0Pjsadi-5URVsQMBh5IRFMU-zjTuTlg5vrAjNLoMQIbt-QmOw-BCihM3taWQ==|gAAAAABl0KUlkuWEBToAaeig1vgFSFi5dIjQnlT5e4JkwVES8hoMtQvf_6UK3MRUm0vdEhXuRmoPvRqE0SYyPXtqiN1W2z07MRPHdHO27TbbcAvnE8SNQFTq9uSRR452cUQMje6CQ643
+```
+
 ### Mount cifs shares at boot time through systemd
 Cifscloak can generate a simple systemd file that seems to work fine for me on Ubuntu and Centos 8.  
 Initially I did not write in any retry mechanism because it just felt sloppy but after systemd gave me a bit of a ride ( through my lack of understanding ) and after reading the documentation ( which suggested that causing the boot to wait is bad ), I instead wrote in a retry. Retrying 6 times seems to get the mounts sorted during boot, -r 6 is added to the systemd file by default. 
