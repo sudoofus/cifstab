@@ -138,6 +138,7 @@ Alternatively the .cifstab directory is created in the home directory of whichev
         );
 ```
 
+Everything apart from the name rests encypted.  
 `sqlite> select * from cifstab;`
 
 ```
