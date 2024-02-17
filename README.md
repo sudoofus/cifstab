@@ -2,6 +2,7 @@
 ### Mount cifs shares using encrypted credentials
 
 Cifscloak is a simple python script for encrypting and storing cifs credentials.  
+In short, it is a wrap around 'mount -t cifs' with user credentials encrypted and stored in a sqlite database.  
 
 ### Tested so far  
 Ubuntu 20.04, Redhat, Centos, Oracle Linux, python3.8.
