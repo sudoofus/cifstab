@@ -10,8 +10,8 @@ import pexpect
 import sqlite3
 import argparse
 from syslog import syslog
-from getpass import getpass
 from string import Template
+from getpass import getpass
 from cryptography.fernet import Fernet
 
 version = '1.0.34'
