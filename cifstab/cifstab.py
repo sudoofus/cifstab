@@ -13,9 +13,8 @@ from syslog import syslog
 from string import Template
 from getpass import getpass
 from cryptography.fernet import Fernet
-from importlib.metadata import version
 
-__version__ = version('cifstab')
+__version__ = "1.0.36"
 
 class Cifstab():
 
