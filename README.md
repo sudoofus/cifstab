@@ -6,7 +6,7 @@ The script is also used for (un)mounting cifs shares and is also able to generat
 
 In short, it is a wrap around 'mount -t cifs' with user credentials encrypted and stored in a sqlite database.  
 
-Formally named cifscloak, cifstab is the new and more appropriate name.  
+Formerly named cifscloak, cifstab is the new and more appropriate name.  
 
 ### Tested so far  
 Ubuntu 20.04, Redhat, Centos, Oracle Linux, python3.8.
