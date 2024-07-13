@@ -2,7 +2,7 @@
 ### Mount cifs shares using encrypted credentials 
 Cifstab is a simple python script used for encrypting and storing cifs credentials.  
 
-The script is also used for (un)mounting cifs shares and is also able to generate a systemd file for mounting at boot time.  
+The script is also used for un/mounting cifs shares and is able to generate a simple systemd file for mounting at boot time.  
 
 In short, it is a wrap around 'mount -t cifs' with user credentials encrypted and stored in a sqlite database.  
 
