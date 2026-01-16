@@ -40,7 +40,7 @@ class Cifstab():
         'umount':['not mounted.']
     }
 
-    systemdtemplate = Template('''$comment\n[Unit]\nAfter=multi-user.target\nDescription=cifstab\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=$path mount $mounts -r 6\nExecStop=$path mount -u $mounts\n\n[Install]\nWantedBy=multi-user.target''')
+    systemdtemplate = Template('''$comment\n[Unit]\nAfter=network-online.target\nWants=network-online.target\nDescription=cifstab\n\n[Service]\nType=oneshot\nRemainAfterExit=yes\nExecStart=$path mount $mounts -r 6 -w 2\nExecStop=$path mount -u $mounts\n\n[Install]\nWantedBy=multi-user.target''')
     
     def __init__(self,cifstabdir=os.environ.get('CIFSTAB_HOME',os.path.expanduser("~"))+os.sep+'.cifstab',keyfile='.keyfile',cifstab='.cifstab.db',retries=3,waitsecs=5):
         self.status = { 'error':0, 'successcount':0, 'failedcount':0, 'success':[], 'failed': [], 'attempts': {}, 'messages':[] }
