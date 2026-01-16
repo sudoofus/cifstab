@@ -150,7 +150,7 @@ class Cifstab():
             credentials = { 'name':r[0], 'address':self.decrypt(r[1]), 'sharename':self.decrypt(r[2]), 'mountpoint':self.decrypt(r[3]), 'options':self.decrypt(r[4]), 'user':self.decrypt(r[5]), 'password':self.decrypt(r[6]) }
         return credentials
 
-    def execute(self,cmd,name,passwd,operation,retryon=[],accepterr=[],expectedreturn=0,pexpecttimeout=3):
+    def execute(self,cmd,name,passwd,operation,retryon=[],accepterr=[],expectedreturn=0,pexpecttimeout=10):
 
         returncode = None
         self.status['attempts'][name] = 0
